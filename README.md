@@ -2,6 +2,8 @@
 
 A browser-based guessing game inspired by the classic "Who's That Pokémon?" format. The player chooses a difficulty, game mode, and input style, then identifies Pokémon from hidden silhouettes.
 
+![Who's That Pokémon preview](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjFuMzcxZHpidjByNHVqaGU3NGJ2aGduZmt4MXQxdGlnbHRlcHB0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Ssts7rvD7E01O/giphy.gif)
+
 ## Features
 
 - Difficulty options for Gen 1, Gen 1-4, and all supported Pokémon.
