@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who's That Pokémon?</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div class="particle-container" id="particles"></div>
+<div class="toast-container" id="toasts"></div>
+
+<!-- ═══ MENU SCREEN ═══ -->
+<div class="screen active" id="screen-menu">
+  <div class="game-logo pixel">
+    <div class="who">WHO'S THAT</div>
+    <img class="pokemon-logo-img" src="https://cdn.worldvectorlogo.com/logos/pokemon-23.svg" alt="Pokémon">
+    <div class="pokemon">GAME</div>
+  </div>
+
+  <div class="menu-section">
+    <label>Your Name</label>
+    <input type="text" class="poke-input" id="playerName" placeholder="Ash Ketchum" maxlength="16">
+  </div>
+
+  <div class="menu-section">
+    <label>Difficulty</label>
+    <div class="btn-row">
+      <button class="pill-btn active" data-diff="easy" onclick="setDiff('easy',this)">Easy (Gen 1)</button>
+      <button class="pill-btn" data-diff="medium" onclick="setDiff('medium',this)">Medium (Gen 1-4)</button>
+      <button class="pill-btn" data-diff="hard" onclick="setDiff('hard',this)">Hard (All)</button>
+    </div>
+  </div>
+
+  <div class="menu-section">
+    <label>Game Mode</label>
+    <div class="btn-row">
+      <button class="pill-btn active" data-mode="classic" onclick="setMode('classic',this)">Classic</button>
+      <button class="pill-btn" data-mode="speed" onclick="setMode('speed',this)">Speed Run</button>
+      <button class="pill-btn" data-mode="survival" onclick="setMode('survival',this)">Survival</button>
+    </div>
+  </div>
+
+  <div class="menu-section">
+    <label>Input Style</label>
+    <div class="btn-row">
+      <button class="pill-btn active" data-input="type" onclick="setInput('type',this)">Type Answer</button>
+      <button class="pill-btn" data-input="mc" onclick="setInput('mc',this)">Multiple Choice</button>
+    </div>
+  </div>
+
+  <div class="menu-section">
+    <label>Music</label>
+    <button class="pill-btn music-toggle active" id="musicToggle" onclick="toggleMusic(this)">Retro Chiptune On</button>
+  </div>
+
+  <button class="start-btn" onclick="startGame()">START GAME</button>
+
+  <div class="leaderboard-preview" id="menuLeaderboard"></div>
+</div>
+
+<!-- ═══ GAME SCREEN ═══ -->
+<div class="screen" id="screen-game">
+  <div class="game-topbar">
+    <div class="topbar-left">
+      <div class="stat-chip yellow">
+        <span class="label">Score</span>
+        <span class="value" id="hud-score">0</span>
+      </div>
+      <div class="stat-chip green">
+        <span class="label">Streak</span>
+        <span class="value" id="hud-streak">0🔥</span>
+      </div>
+      <div class="stat-chip">
+        <span class="label">Round</span>
+        <span class="value" id="hud-round">1/20</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div id="hud-lives" class="lives-display"></div>
+      <div class="mode-badge" id="hud-mode">Classic</div>
+    </div>
+  </div>
+
+  <div class="timer-bar-wrap" style="width:100%">
+    <div class="timer-bar" id="timerBar" style="width:100%"></div>
+  </div>
+
+  <div class="game-arena">
+    <div class="question-number" id="questionNum">Question 1</div>
+
+    <div id="silhouetteStage" class="silhouette-stage">
+      <div class="loading-stage" id="loadingStage">
+        <div class="loading-pokeball"></div>
+        <div style="font-size:12px;color:var(--poke-muted);font-weight:700">Loading...</div>
+      </div>
+      <img id="pokeImg" class="poke-img hidden" src="" alt="" style="display:none">
+      <div class="suspense-text" id="suspenseText" style="display:none">WHO'S THAT POKÉMON?</div>
+    </div>
+
+    <div class="hint-row" id="hintRow"></div>
+
+    <div class="answer-zone" id="answerZone"></div>
+
+    <button class="next-btn" id="nextBtn" onclick="nextRound()">Next Pokémon →</button>
+  </div>
+</div>
+
+<!-- ═══ GAME OVER SCREEN ═══ -->
+<div class="screen" id="screen-gameover">
+  <div style="max-width:500px;width:100%;display:flex;flex-direction:column;align-items:center">
+    <div class="go-title pixel">GAME OVER</div>
+    <div class="go-subtitle" id="go-subtitle">Great try, Trainer!</div>
+
+    <div class="results-grid">
+      <div class="result-card">
+        <div class="rc-label">Final Score</div>
+        <div class="rc-value" id="go-score">0</div>
+        <div class="rc-sub">points</div>
+      </div>
+      <div class="result-card">
+        <div class="rc-label">Best Streak</div>
+        <div class="rc-value" id="go-streak">0</div>
+        <div class="rc-sub">in a row</div>
+      </div>
+      <div class="result-card">
+        <div class="rc-label">Correct</div>
+        <div class="rc-value" id="go-correct">0</div>
+        <div class="rc-sub" id="go-total">of 20</div>
+      </div>
+      <div class="result-card">
+        <div class="rc-label">Accuracy</div>
+        <div class="rc-value" id="go-accuracy">0%</div>
+        <div class="rc-sub">hit rate</div>
+      </div>
+    </div>
+
+    <div id="go-rank-badge" style="margin-bottom:1.5rem;padding:12px 24px;border-radius:999px;font-weight:800;font-size:16px;"></div>
+
+    <div class="go-actions">
+      <button class="go-btn primary" onclick="startGame()">Play Again</button>
+      <button class="go-btn secondary" onclick="showScreen('menu')">Main Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- FEEDBACK OVERLAY -->
+<div class="feedback-overlay" id="feedbackOverlay">
+  <div class="feedback-card">
+    <div class="feedback-emoji" id="fb-emoji"></div>
+    <div class="feedback-title" id="fb-title"></div>
+    <div class="feedback-name" id="fb-name"></div>
+    <div class="feedback-points" id="fb-points"></div>
+    <div class="feedback-streak" id="fb-streak"></div>
+  </div>
+</div>
+
+<script src="assets/js/game.js"></script>
+</body>
+</html>
